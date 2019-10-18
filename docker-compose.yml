@@ -1,0 +1,17 @@
+version: "3"
+services:
+  client:
+    build: ${CLIENT_PATH}
+    image: ${AUTHOR_NAME}/app
+    ports:
+      - "${CLIENT_PORT}:3000"
+    volumes:
+      - ${CLIENT_PATH}:/client
+      - /node_modules
+    restart: always
+    networks:
+      - webappnetwork
+
+networks:
+  webappnetwork:
+    driver: bridge
