@@ -1,12 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { Provider } from 'react-redux'
+import { BrowserRouter as Router } from "react-router-dom";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import ListStoreService from './services/liststore-service'
+import { ListStoreServiceProvider } from './components/list-store-service-context'
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+import App from "./components/app";
+import store from './store'
+
+import Header from "./components/header";
+import Footer from "./components/footer";
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const listStoreService = new ListStoreService();
+
+ReactDOM.render(
+    <Provider store={store}>
+        <ListStoreServiceProvider value={listStoreService}>
+            <Router>
+                <Header />
+                <App />
+                <Footer />
+            </Router>
+        </ListStoreServiceProvider>
+    </Provider>,
+    document.getElementById('root')
+);
