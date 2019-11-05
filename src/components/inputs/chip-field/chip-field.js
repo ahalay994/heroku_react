@@ -1,14 +1,6 @@
 import React from 'react';
-import clsx from 'clsx';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
+import { makeStyles, useTheme } from '@material-ui/core/styles/index';
+import { Input, InputLabel, MenuItem, FormControl, Select, Chip } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
     formControl: {
@@ -38,29 +30,16 @@ const MenuProps = {
     },
 };
 
-const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-];
-
-function getStyles(name, personName, theme) {
+const getStyles = (name, personName, theme) => {
     return {
         fontWeight:
             personName.indexOf(name) === -1
                 ? theme.typography.fontWeightRegular
                 : theme.typography.fontWeightMedium,
     };
-}
+};
 
-const ChipField = () => {
+const ChipField = ({names}) => {
     const classes = useStyles();
     const theme = useTheme();
     const [personName, setPersonName] = React.useState([]);
@@ -72,7 +51,7 @@ const ChipField = () => {
     return (
         <div>
             <FormControl className={classes.formControl}>
-                <InputLabel id="demo-mutiple-chip-label">Chip</InputLabel>
+                <InputLabel id="demo-mutiple-chip-label">Выберите тэг из списка</InputLabel>
                 <Select
                     labelId="demo-mutiple-chip-label"
                     id="demo-mutiple-chip"

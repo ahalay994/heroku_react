@@ -2,7 +2,7 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import './app.css'
 import { withListStoreService } from '../../hoc'
-import { HomePage, CreateBlogerPage } from "../../pages";
+import { HomePage, CreateBlogerPage, SmetaPage } from "../../pages";
 
 const App = () => {
     return (
@@ -15,6 +15,10 @@ const App = () => {
             <Route
                 path='/new'
                 component={ CreateBlogerPage }
+            />
+            <Route
+                path='/edit'
+                component={ SmetaPage }
             />
         </Switch>
     )

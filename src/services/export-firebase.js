@@ -5,7 +5,7 @@ const exportFirebase = async () => {
     let data = [];
 
     await database
-        .ref('/project')
+        .ref('/')
         .once('value')
         .then((snapshot) => {
             data = snapshot.val();

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Input} from "@material-ui/core";
+import {Input} from "@material-ui/core/index";
 
 const MultiTextBox = ({id, name}) => {
     return (

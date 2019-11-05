@@ -5,3 +5,10 @@ input[type='text'], .MuiInput-input {
 .MuiInput-input input {
     margin: 0;
 }
+.second-block {
+    transition: all ease 0.3s;
+    display: block;
+}
+.second-block.toggle-open {
+    display: block;
+}

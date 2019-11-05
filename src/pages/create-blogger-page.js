@@ -2,26 +2,54 @@ import React, {Suspense} from 'react'
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
 import { Input, OutlinedInput } from '@material-ui/core';
-import MultiTextBox from "../components/multi-textbox";
+import MultiTextBox from "../components/inputs/multi-textbox";
 import './pages.css'
 import {Button} from "react-bootstrap";
-import Chip from "@material-ui/core/Chip";
-import Select from "@material-ui/core/Select";
-import ChipField from "../components/chip-field";
+import ChipField from "../components/inputs/chip-field";
+import SelectDropdown from "../components/inputs/select-dropdown";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Radio from "@material-ui/core/Radio";
+import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import { database } from "../config/firebase";
+import firebase from "../config/firebase"
+import Add from "../functions/add";
 
-let lenght = [1,1,1];
+let length = [1,1,1];
 
 const socialName = [
     'Instagram',
     'Youtube',
-    'Другие соцсети (Vk, Twitch, TicTok, Likee, etc.)'
+    'Другие соцсети (Vk, Twitch, TicTok, Likee, etc.)',
+    'Оставить комментарий',
+    'Link на NDA (при наличии)',
+    'Клиент',
+    'Продукт',
+    'Оставить комментарий',
+];
+
+const names = [
+    '#liver Hansen',
+    '#Van Henry',
+    '#April Tucker',
+    '#Ralph Hubbard',
+    '#Omar Alexander',
+    '#Carlos Abbott',
+    '#Miriam Wagner',
+    '#Bradley Wilkerson',
+    '#Virginia Andrews',
+    '#Kelly Snyder',
 ];
 
 class CreateBloggerPage extends React.Component {
 
     state = {
-        components: {}
-
+        components: {},
+        toggleOpen: false,
+        toggleClass: '',
+        // blogger's fields
+        name: '',
+        chanel: ''
     };
 
     componentWillMount(): void {
@@ -36,39 +64,69 @@ class CreateBloggerPage extends React.Component {
 
     addChild = (id) => {
         let state =  this.state.components;
-        state[socialName[id]] = state[socialName[id]].concat([{ id:lenght[id]++, name: socialName[id]}]);
+        state[socialName[id]] = state[socialName[id]].concat([{ id:length[id]++, name: socialName[id]}]);
 
         this.setState({
             components: state
         });
     };
-
     addChildInst = () => {this.addChild(0)};
     addChildYoutube = () => {this.addChild(1)};
     addChildOther = () => {this.addChild(2)};
 
+    onToggleOpen = () => {
+        let toggleState = this.state.toggleOpen;
+        if (toggleState === true) {
+            this.setState({
+                toggleOpen: !this.state.toggleOpen,
+                toggleClass: ''
+            });
+        }
+        else {
+            this.setState({
+                toggleOpen: !this.state.toggleOpen,
+                toggleClass: 'toggle-open'
+            });
+        }
+        // Add(1, this.state.name, this.state.chanel);
+        // console.log(firebase.database().get());
+    };
+
+    onChangeName = e => {
+        this.setState({
+            name: e.target.value
+        });
+    };
+    onChangeChanel = e => {
+        this.setState({
+            chanel: e.target.value
+        });
+    };
 
     render() {
         const { components } = this.state;
         return (
                 <div>
+                    <form>
                     <div className='container'>
                         <div className='row'>
                             <div className='col-12'>
                                 <h1>А кто у нас тут новый блогер?</h1>
                                 <p>Давай-ка заполним эти поля. Будь аккуратен и вводи информацию корректно, иначе
                                     подборку коллегам будет сделать несколько трубнее!</p>
-                                <form>
+
                                     <div className='Main-information'>
                                         <Input
                                             type='text'
                                             placeholder='Имя и фамилия блогера в реальной жизни'
-                                            className='MuiInput-input'/>
+                                            className='MuiInput-input'
+                                            onChange={this.onChangeName}/>
                                         <Input
-                                            type='text'
+                                            type='url'
                                             placeholder='Название основного канала'
                                             className='MuiInput-input'
-                                            required={true}/>
+                                            required={true}
+                                            onChange={this.onChangeChanel}/>
                                     </div>
 
                                     <div className='Social-Networks'>
@@ -101,24 +159,21 @@ class CreateBloggerPage extends React.Component {
                                     </div>
 
                                     <h5>Тэги</h5>
-                                    <ChipField />
+                                    <ChipField names={names} />
 
-                                    <p>Погодите, у меня есть <Link to={() => {
-                                        return 0
-                                    }}>ещё данные</Link>!</p>
-                                </form>
+                                    <p>Погодите, у меня есть <Link onClick={this.onToggleOpen} to={() => { return 0 }}>ещё данные</Link>!</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className='bg-light'>
-                        <div className='container '>
+                    <div className={'bg-light second-block ' + this.state.toggleClass}>
+                        <div className='container'>
                             <div className='row'>
                                 <div className='col-12'>
                                     <form>
                                         <h5>Контактная иформация</h5>
                                         <Input type='email' placeholder='Email' className='MuiInput-input' />
-                                        <Input type='text' placeholder='' className='MuiInput-input' />
+                                        <SelectDropdown id='region' label='Регион' list={names}/>
                                         <Input type='text' placeholder='Телефон' className='MuiInput-input' />
                                         <Input type='text' placeholder='Vk ID' className='MuiInput-input' />
                                         <h5>Статистика</h5>
@@ -139,20 +194,21 @@ class CreateBloggerPage extends React.Component {
                                         <p>Дата обновления стоимостей подгружается автоматически.</p>
                                         <h5>Опыт взаимодействия</h5>
                                         <Input type='text' placeholder='Продукт' className='MuiInput-input'/>
-                                        <textarea
-                                            placeholder='Оставить комментарий... (Привер: не работает с табачкой; долго отвечает; ответственный и т.д.)'
-                                            rows={10} cols={100}/>
+                                        <TextareaAutosize aria-label="minimum height" rows={10} cols={100} placeholder="Оставить комментарий... (Привер: не работает с табачкой; долго отвечает; ответственный и т.д.)" />
                                         <p>Репутационный риск</p>
-                                        <div className='form-check'>
-                                            <input type="radio" className="form-check-input" id={'pages-1'}
-                                                   name='pages' value='Да'/>
-                                            <label className="form-check-label" htmlFor={'pages-1'}>Да</label>
-                                        </div>
-                                        <div className='form-check'>
-                                            <input type="radio" className="form-check-input" id={'pages-2'}
-                                                   name='pages' value='Нет'/>
-                                            <label className="form-check-label" htmlFor={'pages-2'}>Нет</label>
-                                        </div>
+
+                                        <RadioGroup aria-label="gender" name="pages">
+                                            <FormControlLabel
+                                                value="Да"
+                                                control={<Radio color="primary" />}
+                                                label="Да"
+                                            />
+                                            <FormControlLabel
+                                                value="Нет"
+                                                control={<Radio color="primary" />}
+                                                label="Нет"
+                                            />
+                                        </RadioGroup>
                                     </form>
                                 </div>
                             </div>
@@ -166,100 +222,13 @@ class CreateBloggerPage extends React.Component {
                             </div>
                         </div>
                     </div>
+
+                    </form>
                 </div>
         )
         // }
     }
 }
-
-// const CreateBlogerPage = ({ menuItemsLink }) => {
-
-// return (
-//     <div>
-//         <div className='container'>
-//             <div  className='row'>
-//                 <div className='col-12'>
-//                     <h1>А кто у нас тут новый блогер?</h1>
-//                     <p>Давай-ка заполним эти поля. Будь аккуратен и вводи информацию корректно, иначе подборку коллегам будет сделать несколько трубнее!</p>
-//                     <form>
-//                         <input type='text' placeholder='Имя и фамилия блогера в реальной жизни'/>
-//                         <input type='text' placeholder='* Название основного канала'/>
-//                         <h5>Соцсети</h5>
-//                         <form>
-//                             <input type='text' placeholder='Instagram'/>
-//                             {
-//                                 this.state.components.map((item) => (
-//                                     <MultiTextbox key={item.id} name={item.name} />
-//                                 ))
-//                             }
-//                             <Link onClick={addNewField} to={() => {return 0}}>Добавить</Link>
-//                         </form>
-//                         <input type='text' placeholder='Youtube'/>
-//                         <input type='text' placeholder='Другие соцсети (Vk, Twitch, TicTok, Likee, etc.)'/>
-//                         <p>Как минимум одну соц сеть нужно заполнить обязательно!</p>
-//                         <h5>Тэги</h5>
-//                         <textarea placeholder='Внятная и краткая подсказка, как их корректно вводить, чтобы реализовать правильное распределение по кластерам' rows={10} cols={100} />
-//                         <p>Погодите, у меня есть <Link to={() => {return 0}}>ещё данные</Link>!</p>
-//                     </form>
-//                 </div>
-//             </div>
-//         </div>
-//
-//         <div className='bg-light'>
-//             <div className='container '>
-//                 <div  className='row'>
-//                     <div className='col-12'>
-//                         <form>
-//                             <h5>Контактная иформация</h5>
-//                             <input type='text' placeholder='Email'/>
-//                             <input type='text' placeholder=''/>
-//                             <input type='text' placeholder='Телефон'/>
-//                             <input type='text' placeholder='Vk ID'/>
-//                             <h5>Статистика</h5>
-//                             <input type='text' placeholder='Link на скриншоты со статистикой' />
-//                             <h5>Охват Instagram</h5>
-//                             <input type='text' placeholder='Пост' />
-//                             <input type='text' placeholder='Story' />
-//                             <p>Просмотры Youtube подгружаются при наличии ссылки на канал в профиле</p>
-//                             <h5>Стоимость (₽)</h5>
-//                             <h6>Instagram</h6>
-//                             <input type='text' placeholder='Пост' />
-//                             <input type='text' placeholder='Story' />
-//                             <h6>Youtube</h6>
-//                             <input type='text' placeholder='Интеграция' />
-//                             <input type='text' placeholder='Эксклюзив' />
-//                             <h5>Доп. инфо</h5>
-//                             <input type='text' placeholder='' />
-//                             <p>Дата обновления стоимостей подгружается автоматически.</p>
-//                             <h5>Опыт взаимодействия</h5>
-//                             <input type='text' placeholder='Продукт' />
-//                             <textarea placeholder='Оставить комментарий... (Привер: не работает с табачкой; долго отвечает; ответственный и т.д.)' rows={10} cols={100} />
-//                             <p>Репутационный риск</p>
-//                             <div className='form-check'>
-//                                 <input type="radio" className="form-check-input" id={'pages-1'} name='pages' value='Да' />
-//                                 <label className="form-check-label" htmlFor={'pages-1'} >Да</label>
-//                             </div>
-//                             <div className='form-check'>
-//                                 <input type="radio" className="form-check-input" id={'pages-2'} name='pages' value='Нет' />
-//                                 <label className="form-check-label" htmlFor={'pages-2'} >Нет</label>
-//                             </div>
-//                         </form>
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//
-//         <div className='container'>
-//             <div  className='row'>
-//                 <div className='col-12'>
-//                     <Link>Добавить в базу</Link>
-//                 </div>
-//             </div>
-//         </div>
-//     </div>
-//
-// )
-// };
 
 const mapStateToProps = ({ menuItemsLink }) => {
     return {
